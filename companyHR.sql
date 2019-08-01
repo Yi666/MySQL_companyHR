@@ -58,9 +58,31 @@ update employees set id = 11 where id = 4;
 delete from employees where id = 5;		
 
 
-select * from employees where gender = 'M';*/
+select * from employees where gender = 'M';
 
 select employees.id, mentorships.mentor_id, 
 employees.em_name as 'Mentor', mentorships.project as 'Project Name'
 from mentorships join employees on employees.id = mentorships.mentor_id;
 
+create table ex_employees (
+	em_id int primary key,
+    em_name varchar(255) not null,
+    gender char(1) not null,
+    date_left timestamp default now()
+);
+delimiter $$
+create trigger update_ex_employees before delete on employees for each row
+begin
+	insert into ex_employees (em_id, em_name, gender) values (old.id, old.em_name, old.gender);
+end $$
+delimiter ;*/
+
+delimiter $$ 
+
+create function calculateBonus(p_salary double, p_multiple double) returns double deterministic begin
+	declare bonus double(8,2);
+    set bonus = p_salary*p_multiple;
+    return bonus;
+end $$
+
+delimiter ;
