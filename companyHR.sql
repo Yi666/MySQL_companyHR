@@ -1,4 +1,4 @@
-/*CREATE DATABASE companyHR;
+CREATE DATABASE companyHR;
 USE companyHR;
 CREATE TABLE co_employees(
 	id int primary key auto_increment,
@@ -75,14 +75,43 @@ create trigger update_ex_employees before delete on employees for each row
 begin
 	insert into ex_employees (em_id, em_name, gender) values (old.id, old.em_name, old.gender);
 end $$
-delimiter ;*/
+delimiter ;
 
 delimiter $$ 
-
 create function calculateBonus(p_salary double, p_multiple double) returns double deterministic begin
 	declare bonus double(8,2);
     set bonus = p_salary*p_multiple;
     return bonus;
 end $$
+delimiter ;
 
+select id, em_name, salary, calculateBonus(salary, 1.5) as bonus from employees;
+
+delimiter $$
+create function get_employees () returns varchar(255) deterministic
+begin
+	declare v_employees varchar(255) default '';
+    declare v_name varchar(255);
+    declare v_gender char(1);
+    declare v_done int default 0;
+    
+    declare cur cursor for
+		select em_name, gender from employees;
+	
+    declare continue handler for not found set v_done = 1;
+    
+    open cur;
+    
+    employees_loop: loop
+		fetch cur into v_name, v_gender;
+        if v_done = 1 then leave employees_loop;
+			else set v_employees = concat(v_employees, ',', v_name, ':', v_gender);
+		end if;
+	
+    end loop;
+    close cur;
+    
+    return substring(v_employees, 3);
+
+end $$
 delimiter ;
