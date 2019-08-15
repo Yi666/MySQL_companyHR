@@ -129,6 +129,20 @@ END $$
 
 DELIMITER ;
 
+
+# create triggers
+DELIMITER $$
+CREATE TRIGGER payment_check BEFORE DELETE ON members FOR EACH ROW
+BEGIN
+	DECLARE v_payment_due DOUBLE(8,2);
+    SELECT payment_due INTO v_payment_due FROM members WHERE id = OLD.id;
+    IF v_payment_due > 0 THEN 
+		INSERT INTO pending_terminations (id, email, payment_due) VALUES (OLD.id, OLD.email, OLD.payment_due);
+	END IF;
+    
+END $$
+
+DELIMITER ;
     
 
 
