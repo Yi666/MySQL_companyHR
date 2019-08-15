@@ -7,7 +7,7 @@ The goal of this project is for SQL query and JDBC study
 2. Java SDE: IntelliJ
 3. External Library for JDBC: mysql-connector-java-8.0.17.jar
 
-# data imported
+#data imported
 All data imported into this project are fake data just for study
 
 
